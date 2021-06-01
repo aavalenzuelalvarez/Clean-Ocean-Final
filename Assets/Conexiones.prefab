@@ -43,3 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cb69b7e47348a34abaab3544b33dc8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  secondsToCount: 60
+  secondsCounter: 0
+  jugando: 1

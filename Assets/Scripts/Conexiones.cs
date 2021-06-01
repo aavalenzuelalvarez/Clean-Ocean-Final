@@ -950,7 +950,7 @@ public class Conexiones : MonoBehaviour
         }
         catch(Exception ex)
         {   
-            string path = @"/storage/emulated/0/android/data/cl.CalvoRodriguez.CleanOcean/Datos.txt";
+            string path = @"E:\Escritorio\DatitaCleanOceancita/CleanOcean/Datos.txt";
             //string path = @"C:/Users/Alberto/Desktop/Clean Ocean Datos.txt";
             if (!File.Exists(path))
             {

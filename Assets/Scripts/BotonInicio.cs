@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class BotonInicio : MonoBehaviour
 {
@@ -15,7 +16,10 @@ public class BotonInicio : MonoBehaviour
      //rotatedObject.GetComponent<RotateCamera>().enabled = false;   
      //GameObject.Find("Main Camera").GetComponent<RotateCamera>().enabled=false;
     }
-
+    public void empezamo()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
     // Update is called once per frame
     void Update()
     {

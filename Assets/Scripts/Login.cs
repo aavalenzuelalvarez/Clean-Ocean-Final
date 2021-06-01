@@ -2,70 +2,59 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using MySql.Data.MySqlClient;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using System;
+[Serializable]
+public class Usuario
+{
+    public int id;
+    public string loginame;
+    public string password;
+    public string nombre;
+}
 
 public class Login : MonoBehaviour
 {
-    public InputField usr;
-    public InputField pass;
-    public GameObject error;
-
-
-    void Start()
+    public InputField userInput;
+    public InputField passwordInput;
+    public IEnumerator Post(Usuario usuario)
     {
-        error.SetActive(false);
+        string urlAPI = "http://localhost:3002/api/login";
+        var jsonData = JsonUtility.ToJson(usuario);
 
-    }
-    public void Logear()
-    {
-
-        string _log = "Select * from usuario WHERE username = '" + usr.text + "' AND  password = '" + pass.text + "';";
-        //Conexiones _conexion = GameObject.Find("Conexiones").GetComponent<Conexiones>();
-        //MySqlDataReader resultado = _conexion.Select(_log);
-        MySqlDataReader resultado = GameObject.Find("Conexiones").GetComponent<Conexiones>().Select(_log);
-
-        if (resultado.HasRows)
+        using (UnityWebRequest www = UnityWebRequest.Post(urlAPI,jsonData))
         {
-            if (resultado.Read())
-            {
-                int tipo = (int) resultado["tipo_usuario_id"];
-                print("tipo " + tipo);
-                Debug.Log("Conectado.");
-                if (tipo == 3)
-                {
-                    Conexiones.id_user = resultado["id"].ToString();
-                    SceneManager.LoadScene(2);
-                    Conexiones.tipo_usuario = tipo.ToString();
-                    GameObject.Find("Conexiones").GetComponent<Conexiones>().GameStart();
+            www.SetRequestHeader("content-type", "application/json");
+            www.uploadHandler.contentType = "application/json";
+            www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
+            yield return www.SendWebRequest();
 
-                }
-                else if (tipo == 2 || tipo == 1)
+            if (www.isNetworkError)
+            {
+                Debug.Log(www.error);
+                Debug.Log("Error");
+            }
+            else
+            {
+                if(www.isDone)
                 {
-                    Conexiones.id_user = resultado["id"].ToString();
-                    SceneManager.LoadScene(1);
-                    Conexiones.tipo_usuario = tipo.ToString();
+                    var result = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+                    if(result!=null)
+                    {
+                        var usuarios = JsonUtility.FromJson<Usuario>(result);
+                        SceneManager.LoadScene("Progreso");
+                    }
                 }
             }
-
         }
-        else
-        {
-            Debug.Log("nop");
-            error.SetActive(true);
-            Invoke("desactivar", 2f);
-
-        }
-
-
     }
-    // Start is called before the first frame update
-   
-
-    // Update is called once per frame
-    public void desactivar()
+    public void Logearse()
     {
-        error.SetActive(false);
+        Usuario usuario;
+        usuario = new Usuario();
+        usuario.loginame = userInput.GetComponent<InputField>().text;
+        usuario.password = passwordInput.GetComponent<InputField>().text;
+        StartCoroutine(Post(usuario));
     }
-
 }
